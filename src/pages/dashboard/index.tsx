@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo } from 'react'
 import DefaultPage from '../../components/DefaultPage'
 import { Detail } from '../../components/DefaultPage/Detail'
 import { QuickSightDashboard, QuickSightUser } from '../../api/quickSight/types'
@@ -10,15 +10,14 @@ import SelectAsync from '../../components/Form/SelectAsync'
 import { SendButton } from './styles'
 import { embedDashboard, embedVisual, embedSession, embedQSearchBar } from 'amazon-quicksight-embedding-sdk'
 
-const Dashboard: React.FC = () => {
-  const [embedUrl, setEmbedUrl] = useState<string | null>(null)
-  const embeddingContainer = useRef<HTMLDivElement | null>(null)
+const CONTAINER_ID = 'embeddingContainer'
 
+const Dashboard: React.FC = () => {
   const formSchema = useMemo(
     () =>
       Yup.object().shape({
-        user: Yup.object().required('User is required'),
-        dashboard: Yup.object().required('Dashboard is required')
+        user: Yup.object().nullable().required('Informe o Usuário'),
+        dashboard: Yup.object().nullable().required('Escolha o Dashboard')
       }),
     []
   )
@@ -46,50 +45,50 @@ const Dashboard: React.FC = () => {
     return data
   }
 
-  console.log({ current: embeddingContainer.current })
-
-  const embeddingOptions = useMemo((): EmbeddingOptions | null => {
-    if (embedUrl) {
-      return {
+  const embed = (embedUrl: string) =>
+    new Promise<void>((resolve, reject) => {
+      console.log('Embed url', embedUrl)
+      const dashboardEmbed = embedDashboard({
         url: embedUrl,
-        container: embeddingContainer.current || '',
-        scrolling: 'no',
+        container: `#${CONTAINER_ID}`,
+        scrolling: 'yes',
         height: '100%',
         width: '100%',
-        parameters: {
-          country: 'Brazil'
-        },
         errorCallback: (error: any) => {
-          console.error(error)
+          console.error({ error })
+          reject(error)
         },
         loadCallback: () => {
-          console.log('Loaded')
+          console.log('Loaded!')
+          resolve()
         },
-        locale: 'pt-BR',
-        printEnabled: true
-        // dashboardId,
-      }
-    }
-    return null
-  }, [embedUrl])
+        undoRedoDisabled: false,
+        resetDisabled: false
+      })
+      console.log('Dashboard', dashboardEmbed)
+    })
 
-  const iframeToEmbed: HTMLIFrameElement | null = useMemo(() => {
-    if (embeddingOptions) {
-      return embedDashboard(embeddingOptions)
+  const clear = () => {
+    const container = document.getElementById(CONTAINER_ID)
+    if (container) {
+      container.innerHTML = ''
     }
-    return null
-  }, [embeddingOptions])
+  }
 
   const onSubmit = async ({ dashboard, user }: typeof initialValues) => {
     console.log('Getting embed url')
     console.log({ dashboard, user })
+    console.log({
+      dashboardId: dashboard?.DashboardId,
+      userArn: user?.Arn
+    })
     if (!dashboard || !user) {
       console.error('Dashboard or user not found')
       return
     }
+    clear()
     const embedUrl = await getDashboardEmbedUrl(dashboard.DashboardId, user.Arn)
-    setEmbedUrl(embedUrl)
-    console.log('Embed url', embedUrl)
+    return await embed(embedUrl)
   }
 
   return (
@@ -97,7 +96,7 @@ const Dashboard: React.FC = () => {
       <Detail>
         <h1>Dashboard</h1>
         <Formik initialValues={initialValues} validationSchema={formSchema} onSubmit={onSubmit} validateOnChange={false}>
-          {({ setFieldValue, errors, isSubmitting }) => (
+          {({ setFieldValue, isSubmitting }) => (
             <Form>
               <FormBody type="flex" flexRow alignItems="flex-end">
                 <SelectAsync
@@ -122,14 +121,14 @@ const Dashboard: React.FC = () => {
                   optionValue="Name"
                   fontSizeLabel="12px"
                 />
-                <SendButton type="submit" disabled={isSubmitting || Object.keys(errors).length > 0} loading={isSubmitting}>
+                <SendButton type="submit" disabled={isSubmitting} loading={isSubmitting}>
                   Send
                 </SendButton>
               </FormBody>
             </Form>
           )}
         </Formik>
-        {iframeToEmbed && <div ref={embeddingContainer} />}
+        <div id={CONTAINER_ID} style={{ height: '100%', width: '100%' }} />
       </Detail>
     </DefaultPage>
   )

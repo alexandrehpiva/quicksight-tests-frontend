@@ -23,6 +23,9 @@ type SendButtonProps = {
   loading?: boolean
 }
 export const SendButton = styled.button<SendButtonProps>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #fff;
   border: 1px solid #858585;
   border-radius: 4px;
@@ -50,6 +53,16 @@ export const SendButton = styled.button<SendButtonProps>`
   ${({ loading }) =>
     loading &&
     css`
-      animation: ${spin} 1s linear infinite;
+      &::after {
+        content: '';
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        margin-left: 0.5rem;
+        border: 3px solid #858585;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: ${spin} 0.6s linear infinite;
+      }
     `}
 `
