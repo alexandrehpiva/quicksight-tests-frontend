@@ -5,21 +5,16 @@ import { QuickSightDashboard, QuickSightUser } from '../../api/quickSight/types'
 import { api } from '../../api'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
-import { Form, FormBody } from '../../components/Form/styles'
+import { Form, FormBody, FormFooter } from '../../components/Form/styles'
 import SelectAsync from '../../components/Form/SelectAsync'
-
+import { FiltersContainer, SendButton } from './styles'
 
 const Dashboard: React.FC = () => {
-  const [userList, setUserList] = React.useState<QuickSightUser[]>([])
-  const [dashboardList, setDashboardList] = React.useState<QuickSightDashboard[]>([])
-  const [selectedUser, setSelectedUser] = React.useState<QuickSightUser | null>(null)
-  const [selectedDashboard, setSelectedDashboard] = React.useState<QuickSightDashboard | null>(null)
-
   const formSchema = useMemo(
     () =>
       Yup.object().shape({
-        user: Yup.string().required('User is required'),
-        dashboard: Yup.string().required('Dashboard is required'),
+        user: Yup.object().required('User is required'),
+        dashboard: Yup.object().required('Dashboard is required')
       }),
     []
   )
@@ -27,92 +22,63 @@ const Dashboard: React.FC = () => {
   const initialValues = useMemo(
     () => ({
       user: '',
-      dashboard: '',
+      dashboard: ''
     }),
     []
   )
+
+  const getUserOptions = async (inputValue: string): Promise<QuickSightUser[]> => {
+    const { data } = await api.quickSight.getUserList(inputValue)
+    return data
+  }
+
+  const getDashboardOptions = async (inputValue: string): Promise<QuickSightDashboard[]> => {
+    const { data } = await api.quickSight.getDashboardList(inputValue)
+    return data
+  }
 
   const onSubmit = async (values: any) => {
     console.log('Submitting form...')
     console.log(values)
   }
 
-  const getDashboardData = async (name?: string) => {
-    const data = await api.quickSight.getDashboardList(name)
-    setDashboardList(data)
-  }
-
-  const getUserData = async (userName?: string) => {
-    const data = await api.quickSight.getUserList(userName)
-    setUserList(data)
-  }
-
-  useEffect(() => {
-    console.log('Getting user data...')
-    getUserData()
-    console.log('Getting dashboard data...')
-    getDashboardData()
-  }, [])
-
-  useEffect(() => {
-    console.log('Selected user:', selectedUser)
-  }, [selectedUser])
-
-  useEffect(() => {
-    console.log('Selected dashboard:', selectedDashboard)
-  }, [selectedDashboard])
-
   return (
     <DefaultPage>
       <Detail>
         <h1>Dashboard</h1>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={formSchema}
-            onSubmit={onSubmit}
-            validateOnChange={false}
-          >
-            {({ setFieldValue }) => (
-              <Form>
-                <FormBody>
-                  <div>
-                    <SelectAsync
-                      name="user"
-                      label="User"
-                      loadOptions={async (inputValue: string) => {
-                        return userList.filter((user) => user.UserName.includes(inputValue))
-                      }}
-                      onChange={(option: QuickSightUser | null) => {
-                        setSelectedUser(option)
-                        setFieldValue('user', option?.UserName)
-                      }}
-                      optionLabel="UserName"
-                      optionValue="UserName"
-                      width="230px"
-                      fontSizeLabel="12px"
-                    />
-                  </div>
-                  <div>
-                    <SelectAsync
-                      name="dashboard"
-                      label="Dashboard"
-                      loadOptions={async (inputValue: string) => {
-                        return dashboardList.filter((dashboard) => dashboard.Name.includes(inputValue))
-                      }}
-                      onChange={(option: QuickSightDashboard | null) => {
-                        setSelectedDashboard(option)
-                        setFieldValue('dashboard', option?.Name)
-                      }}
-                      optionLabel="Name"
-                      optionValue="Name"
-                      width="230px"
-                      fontSizeLabel="12px"
-                    />
-                  </div>
-                </FormBody>
-              </Form>
-            )}
-          </Formik>
+        <Formik initialValues={initialValues} validationSchema={formSchema} onSubmit={onSubmit} validateOnChange={false}>
+          {({ setFieldValue, errors, isSubmitting }) => (
+            <Form>
+              <FormBody type="flex" flexRow alignItems="flex-end">
+                <SelectAsync
+                  name="user"
+                  label="User"
+                  loadOptions={getUserOptions}
+                  onChange={(option: QuickSightUser | null) => {
+                    setFieldValue('user', option?.UserName)
+                  }}
+                  optionLabel="UserName"
+                  optionValue="UserName"
+                  fontSizeLabel="12px"
+                />
+                <SelectAsync
+                  name="dashboard"
+                  label="Dashboard"
+                  loadOptions={getDashboardOptions}
+                  onChange={(option: QuickSightDashboard | null) => {
+                    setFieldValue('dashboard', option?.Name)
+                  }}
+                  optionLabel="Name"
+                  optionValue="Name"
+                  fontSizeLabel="12px"
+                />
+                <SendButton type="submit" disabled={isSubmitting || Object.keys(errors).length > 0} loading={isSubmitting}>
+                  Send
+                </SendButton>
+              </FormBody>
+            </Form>
+          )}
+        </Formik>
       </Detail>
     </DefaultPage>
   )

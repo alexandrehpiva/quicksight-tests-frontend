@@ -4,27 +4,36 @@ import { QuickSightDashboard, QuickSightAnalysis, QuickSightUser } from './types
 export const quickSight = {
   // getDashboardList: async () => defaultRequest.get<QuickSightDashboard[]>('/quicksight/dashboards'),
   getDashboardList: async (name?: string) => {
-    const { data: dashboardList } = await defaultRequest.get<QuickSightDashboard[]>('/quicksight/dashboards')
+    const result = await defaultRequest.get<QuickSightDashboard[]>('/quicksight/dashboards')
     if (!name) {
-      return dashboardList
+      return result
     }
-    return dashboardList.filter((dashboard) => dashboard.Name === name)
+    return {
+      ...result,
+      data: result.data.filter((dashboard) => dashboard.Name.toLowerCase().includes(name.toLowerCase()))
+    }
   },
   // getAnalysisList: async () => defaultRequest.get<QuickSightAnalysis[]>('/quicksight/analyses'),
   getAnalysisList: async (name?: string) => {
-    const { data: analysisList } = await defaultRequest.get<QuickSightAnalysis[]>('/quicksight/analyses')
+    const result = await defaultRequest.get<QuickSightAnalysis[]>('/quicksight/analyses')
     if (!name) {
-      return analysisList
+      return result
     }
-    return analysisList.filter((analysis) => analysis.Name === name)
+    return {
+      ...result,
+      data: result.data.filter((analysis) => analysis.Name.toLowerCase().includes(name.toLowerCase()))
+    }
   },
   // getUserList: async () => defaultRequest.get<QuickSightUser[]>('/quicksight/users'),
   getUserList: async (userName?: string) => {
-    const { data: userList } = await defaultRequest.get<QuickSightUser[]>('/quicksight/users')
+    const result = await defaultRequest.get<QuickSightUser[]>('/quicksight/users')
     if (!userName) {
-      return userList
+      return result
     }
-    return userList.filter((user) => user.UserName === userName)
+    return {
+      ...result,
+      data: result.data.filter((user) => user.UserName.toLowerCase().includes(userName.toLowerCase()))
+    }
   },
   getDashboardEmbeddingUrl: async (dashboardId: string) => defaultRequest.get<string>(`/quicksight/dashboards/${dashboardId}/embedding-url`)
 }

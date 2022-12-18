@@ -25,26 +25,27 @@ export const Form = styled(FormikForm)<FormProps>`
 
 type FormBodyProps = {
   type?: 'flex' | 'grid'
-  centered?: boolean
   flexRow?: boolean
-  justifyContent?: string
+  flexWrap?: boolean
+  alignItems?: 'center' | 'flex-start' | 'flex-end'
+  justifyContent?: 'space-between' | 'center' | 'flex-start' | 'flex-end'
   gap?: string
   width?: string
 }
 export const FormBody = styled.div<FormBodyProps>`
-  ${({ type, centered, flexRow, justifyContent, gap, width }) => css`
+  ${({ type, flexRow, flexWrap, alignItems, justifyContent, gap, width }) => css`
     ${
       type === 'flex'
         ? css`
             display: flex;
             flex-direction: ${flexRow ? 'row' : 'column'};
             justify-content: ${justifyContent || 'space-between'};
-            align-items: ${centered ? 'center' : 'flex-start'};
-            flex-wrap: wrap;
+            align-items: ${alignItems || 'center'};
+            flex-wrap: ${flexWrap ? 'wrap' : 'nowrap'};
           `
         : css`
             display: grid;
-            ${centered &&
+            ${alignItems === 'center' &&
             css`
               justify-items: center;
               align-items: center;
