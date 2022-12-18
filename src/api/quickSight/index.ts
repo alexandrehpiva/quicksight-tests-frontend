@@ -35,5 +35,8 @@ export const quickSight = {
       data: result.data.filter((user) => user.UserName.toLowerCase().includes(userName.toLowerCase()))
     }
   },
-  getDashboardEmbeddingUrl: async (dashboardId: string) => defaultRequest.get<string>(`/quicksight/dashboards/${dashboardId}/embedding-url`)
+  getDashboardEmbeddingUrl: async (dashboardId: string, userArn: string) =>
+    defaultRequest.get<string>(`/quicksight/dashboards/embedding_url/${dashboardId}`, {
+      params: { user_arn: userArn }
+    })
 }
