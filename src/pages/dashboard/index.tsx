@@ -76,7 +76,6 @@ const Dashboard: React.FC = () => {
               <Form>
                 <FormBody>
                   <div>
-                    <label htmlFor="user">User</label>
                     <SelectAsync
                       name="user"
                       label="User"
@@ -94,7 +93,6 @@ const Dashboard: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="dashboard">Dashboard</label>
                     <SelectAsync
                       name="dashboard"
                       label="Dashboard"
