@@ -37,13 +37,13 @@ const Dashboard: React.FC = () => {
     console.log(values)
   }
 
-  const getDashboardData = async () => {
-    const { data } = await api.quickSight.getDashboardList()
+  const getDashboardData = async (name?: string) => {
+    const data = await api.quickSight.getDashboardList(name)
     setDashboardList(data)
   }
 
-  const getUserData = async () => {
-    const { data } = await api.quickSight.getUserList()
+  const getUserData = async (userName?: string) => {
+    const data = await api.quickSight.getUserList(userName)
     setUserList(data)
   }
 
