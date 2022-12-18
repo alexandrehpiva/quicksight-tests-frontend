@@ -1,24 +1,36 @@
-import { RouteObject } from 'react-router-dom';
-import Admin from '../pages/admin';
-import Dashboard from '../pages/dashboard';
-import Home from '../pages/home';
+import { RouteObject } from 'react-router-dom'
+import Admin from '../pages/admin'
+import Dashboard from '../pages/dashboard'
+import Home from '../pages/home'
+import { FCC } from '../typings/global'
 
+type Route = {
+  path: string
+  name: string
+  component: FCC
+}
 
-export const routes: RouteObject[] = [
+export const routes: Route[] = [
   {
     path: '/',
-    element: <Home />
+    name: 'Home',
+    component: Home,
   },
   {
     path: '/admin',
-    element: <Admin />
+    name: 'Admin',
+    component: Admin,
   },
   {
     path: '/dashboard',
-    element: <Dashboard />
+    name: 'Dashboard',
+    component: Dashboard,
   },
-  {
-    path: '*',
-    element: <div>404</div>
-  }
-];
+]
+
+export const routeObjects: RouteObject[] = routes.map(
+  ({ path, component: Component }) => ({
+    path,
+    element: <Component />,
+  }),
+)

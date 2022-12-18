@@ -1,24 +1,14 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import DefaultPage from '../../components/DefaultPage'
+import { Detail } from '../../components/DefaultPage/Detail'
 
 const Home: React.FC = () => {
   return (
-    <div>
-      <div id="sidebar">
+    <DefaultPage>
+      <Detail>
         <h1>Home</h1>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/admin">Admin</Link>
-            </li>
-            <li>
-              <Link to="/dashboard">Dashboard</Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
-      <div id="detail"></div>
-    </div>
+      </Detail>
+    </DefaultPage>
   )
 }
 

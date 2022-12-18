@@ -1,13 +1,15 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react'
+import DefaultPage from '../../components/DefaultPage'
+import { Detail } from '../../components/DefaultPage/Detail'
 
 const Admin: React.FC = () => {
   return (
-    <div>
-      <h1>Admin</h1>
-      <Link to="/">Voltar</Link>
-    </div>
-  );
-};
+    <DefaultPage>
+      <Detail>
+        <h1>Admin</h1>
+      </Detail>
+    </DefaultPage>
+  )
+}
 
-export default Admin;
+export default Admin
