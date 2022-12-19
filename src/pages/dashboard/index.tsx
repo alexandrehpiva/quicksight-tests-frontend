@@ -94,14 +94,14 @@ const Dashboard: React.FC = () => {
   return (
     <DefaultPage>
       <Detail>
-        <h1>Dashboard</h1>
+        <h1>POC - QuickSight Dashboard Embedding</h1>
         <Formik initialValues={initialValues} validationSchema={formSchema} onSubmit={onSubmit} validateOnChange={false}>
           {({ setFieldValue, isSubmitting }) => (
             <Form>
-              <FormBody type="flex" flexRow alignItems="flex-end">
+              <FormBody type="flex" flexRow alignItems="flex-start">
                 <SelectAsync
                   name="user"
-                  label="User"
+                  label="Usuário"
                   loadOptions={getUserOptions}
                   onChange={(option: QuickSightUser | null) => {
                     setFieldValue('user', option?.UserName)
@@ -122,7 +122,7 @@ const Dashboard: React.FC = () => {
                   fontSizeLabel="12px"
                 />
                 <SendButton type="submit" disabled={isSubmitting} loading={isSubmitting}>
-                  Send
+                  {isSubmitting ? 'Carregando...' : 'Carregar'}
                 </SendButton>
               </FormBody>
             </Form>

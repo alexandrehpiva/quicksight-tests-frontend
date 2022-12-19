@@ -34,7 +34,7 @@ export const SendButton = styled.button<SendButtonProps>`
   font-weight: 300;
   padding: 0.5rem 1rem;
   margin-left: 1rem;
-  margin-bottom: 0.3rem;
+  margin-top: 2.1rem;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 
